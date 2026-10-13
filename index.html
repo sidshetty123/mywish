@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>My Schedule</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#f6f7fb;--card:#fff;--tx:#1d2330;--mu:#6b7385;--bd:#e3e6ee;--ac:#4f46e5;--ac2:#eef0ff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12141b;--card:#1b1e28;--tx:#e8eaf1;--mu:#99a0b3;--bd:#2c3140;--ac:#818cf8;--ac2:#23263a}}
+:root[data-theme="dark"]{--bg:#12141b;--card:#1b1e28;--tx:#e8eaf1;--mu:#99a0b3;--bd:#2c3140;--ac:#818cf8;--ac2:#23263a}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.4 system-ui,-apple-system,Segoe UI,sans-serif;display:flex;min-height:100vh}
+nav{width:200px;background:var(--card);border-right:1px solid var(--bd);padding:16px 10px;display:flex;flex-direction:column;gap:3px;flex-shrink:0}
+nav h2{font-size:17px;margin:4px 10px 12px}
+nav button{all:unset;cursor:pointer;padding:9px 12px;border-radius:8px;display:flex;justify-content:space-between;color:var(--tx)}
+nav button:hover{background:var(--ac2)}nav button.on{background:var(--ac);color:#fff}
+nav .cnt{font-size:12px;opacity:.7}
+main{flex:1;padding:20px;min-width:0}
+.top{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+.top h1{margin:0;font-size:22px;flex:1;min-width:120px}
+.btn{border:1px solid var(--bd);background:var(--card);color:var(--tx);padding:8px 13px;border-radius:8px;cursor:pointer;font:inherit}
+.btn.p{background:var(--ac);color:#fff;border-color:var(--ac)}.btn.on{background:var(--ac2);border-color:var(--ac)}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px;margin-bottom:14px}
+.card h3{margin:0 0 10px;font-size:15px}
+.item{display:flex;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--bd)}
+.item:first-of-type{border-top:0}.item.done .t{text-decoration:line-through;opacity:.5}
+.item .t{flex:1;min-width:0}.item small{color:var(--mu);display:block}
+.tag{font-size:11px;padding:2px 8px;border-radius:99px;background:color-mix(in srgb,var(--c) 20%,var(--card));color:var(--tx);border:1px solid var(--c);white-space:nowrap}
+.ic{background:none;border:0;cursor:pointer;color:var(--mu);font-size:15px;padding:4px}
+.empty{color:var(--mu);font-size:13px}
+.tlw{overflow-x:auto;background:var(--card);border:1px solid var(--bd);border-radius:12px}
+.tl{display:grid;min-width:100%}
+.hd{padding:8px 4px;text-align:center;font-size:12px;color:var(--mu);border-bottom:1px solid var(--bd);border-left:1px solid var(--bd)}
+.hd.today{color:var(--ac);font-weight:700}
+.ad{border-bottom:1px solid var(--bd);border-left:1px solid var(--bd);padding:2px;min-height:6px}
+.hrs{position:relative;font-size:11px;color:var(--mu)}
+.hrs span{position:absolute;right:6px;transform:translateY(-50%)}
+.col{position:relative;border-left:1px solid var(--bd)}
+.ev{position:absolute;overflow:hidden;font-size:12px;line-height:1.25;padding:3px 5px;border-radius:6px;cursor:pointer;border-left:3px solid var(--c);background:color-mix(in srgb,var(--c) 22%,var(--card));color:var(--tx)}
+.ev b{display:block;font-weight:600;font-size:11px;opacity:.8}
+.ev.done{opacity:.45}.ad .ev{position:static;margin:2px 0}
+.now{position:absolute;left:0;right:0;height:2px;background:#ef4444;z-index:2;pointer-events:none}
+dialog{border:1px solid var(--bd);border-radius:14px;background:var(--card);color:var(--tx);width:min(440px,94vw);padding:18px;max-height:92vh}
+dialog::backdrop{background:#0008}
+label{display:block;font-size:13px;color:var(--mu);margin:10px 0 4px}
+input,select,textarea{width:100%;padding:9px;border-radius:8px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);font:inherit}
+.cats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.cats .btn{padding:14px 8px;text-align:center}
+.row{display:flex;gap:8px}.row>*{flex:1;min-width:0}
+.chips{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px}
+.chips label{margin:0;border:1px solid var(--bd);border-radius:8px;padding:5px 8px;display:flex;gap:4px;align-items:center;color:var(--tx);cursor:pointer}
+.chips input,.chk input{width:auto}.chk{display:flex;gap:8px;align-items:center;color:var(--tx);margin-top:12px}
+.acts{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
+#toast{position:fixed;right:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:8px;z-index:9}
+#toast div{background:var(--ac);color:#fff;padding:10px 14px;border-radius:10px;max-width:300px;cursor:pointer}
+@media(max-width:720px){body{flex-direction:column}nav{width:100%;flex-direction:row;overflow-x:auto;padding:8px;border-right:0;border-bottom:1px solid var(--bd)}nav h2{display:none}nav button{white-space:nowrap;gap:6px}main{padding:14px}}
+</style></head><body>
+<nav id="nav"></nav>
+<main>
+ <div class="top"><h1 id="title"></h1>
+  <button class="btn" id="impBtn">📥 Import splan</button>
+  <button class="btn" id="notifBtn">🔔 Alerts</button>
+  <button class="btn p" id="add">+ Add</button></div>
+ <div id="view"></div>
+</main>
+<div id="toast"></div>
+<dialog id="dlg"><div id="dbody"></div></dialog>
+<script>
+const CATS={class:["Classes","🎓","#6366f1"],event:["Events","🎉","#db2777"],homework:["Homework","📚","#059669"],work:["Work","💼","#0891b2"],misc:["Miscellaneous","🗂️","#7c8497"],deadline:["Deadlines","⏰","#dc2626"],reminder:["Reminders","🔔","#d97706"]};
+const DN=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],HH=46;
+const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+let items=store.get("sched.items",[]),notified=store.get("sched.notified",{});
+let recs=store.get("sched.recs",null);
+if(recs===null)recs=[{id:"german",title:"German class",cat:"class",days:[0,2],time:"17:15",end:"20:30",notes:"",from:"2026-10-01",until:""}];
+let filt=store.get("sched.filt",{codes:["172383","172352","172360","172369","172378","262310","262311","262317","262350"],kws:["Change & Innovation Management"]});
+let tab="schedule",view="week",anchor=new Date();anchor.setHours(0,0,0,0);
+const $=s=>document.querySelector(s),pad=n=>String(n).padStart(2,"0");
+const iso=d=>d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
+const mon=d=>{d=new Date(d);d.setDate(d.getDate()-((d.getDay()+6)%7));return d};
+const save=()=>{store.set("sched.items",items);store.set("sched.recs",recs);store.set("sched.notified",notified);store.set("sched.filt",filt)};
+const sortf=(a,b)=>(a.date+(a.time||"00:00")).localeCompare(b.date+(b.time||"00:00"));
+const esc=s=>String(s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const tm=t=>+t.slice(0,2)*60+ +t.slice(3,5);
+const rng=i=>i.time?i.time+(i.end?"–"+i.end:""):"All day";
+const nid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,5);
+
+function occ(k){
+ const wd=(new Date(k+"T00:00").getDay()+6)%7;
+ const a=items.filter(i=>i.date===k).map(i=>({...i}));
+ recs.forEach(r=>{if(r.days.includes(wd)&&(!r.from||k>=r.from)&&(!r.until||k<=r.until))a.push({...r,rec:true,date:k})});
+ return a.sort(sortf);
+}
+function renderNav(){
+ const e=[["schedule","📅 Schedule"],...Object.entries(CATS).map(([k,v])=>[k,v[1]+" "+v[0]])];
+ $("#nav").innerHTML="<h2>My Schedule</h2>"+e.map(([k,l])=>{
+  const c=k==="schedule"?"":items.filter(i=>i.cat===k&&!i.done).length+recs.filter(r=>r.cat===k).length;
+  return `<button class="${tab===k?"on":""}" data-t="${k}"><span>${l}</span><span class="cnt">${c}</span></button>`}).join("");
+ $("#nav").querySelectorAll("button").forEach(b=>b.onclick=()=>{tab=b.dataset.t;render()});
+}
+function itemHTML(i,showDate){
+ const c=CATS[i.cat];
+ return `<div class="item ${i.done?"done":""}" style="--c:${c[2]}">${i.rec?'<span title="Repeats weekly">🔁</span>':`<input type="checkbox" style="width:auto" ${i.done?"checked":""} onchange="tog('${i.id}')">`}
+ <div class="t">${esc(i.title)}<small>${showDate?new Date(i.date+"T00:00").toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"})+" · ":""}${rng(i)}${i.notes?" · "+esc(i.notes):""}</small></div>
+ <span class="tag">${c[0]}</span><button class="ic" onclick="openDlg('${i.id}')">✏️</button><button class="ic" onclick="del('${i.id}')">🗑️</button></div>`}
+const list=(a,sd,msg)=>a.length?a.map(i=>itemHTML(i,sd)).join(""):`<div class="empty">${msg}</div>`;
+
+function timeline(dates){
+ const today=iso(new Date()),days=dates.map(d=>({k:iso(d),d,ev:occ(iso(d))}));
+ let lo=7,hi=22;
+ days.forEach(x=>x.ev.forEach(e=>{if(!e.time)return;e.s=tm(e.time);e.e=e.end&&tm(e.end)>e.s?tm(e.end):(e.end?1440:e.s+(["deadline","reminder"].includes(e.cat)?30:60));if(e.e>1440)e.e=1440;lo=Math.min(lo,Math.floor(e.s/60));hi=Math.max(hi,Math.ceil(e.e/60))}));
+ const H=(hi-lo)*HH,n=days.length;
+ let h=`<div class="tl" style="grid-template-columns:48px repeat(${n},minmax(${n>1?118:200}px,1fr))"><div></div>`;
+ days.forEach(x=>h+=`<div class="hd ${x.k===today?"today":""}">${x.d.toLocaleDateString(undefined,{weekday:"short",day:"numeric",month:"short"})}</div>`);
+ h+="<div></div>";
+ const blk=e=>`<div class="ev ${e.done?"done":""}" style="--c:${CATS[e.cat][2]}" onclick="openDlg('${e.id}')" ${e.time?`style=""`:""}>`;
+ days.forEach(x=>h+=`<div class="ad">${x.ev.filter(e=>!e.time).map(e=>`<div class="ev ${e.done?"done":""}" style="--c:${CATS[e.cat][2]}" onclick="openDlg('${e.id}')">${e.rec?"🔁 ":""}${esc(e.title)}</div>`).join("")}</div>`);
+ h+=`<div class="hrs" style="height:${H}px">${Array.from({length:hi-lo},(_,j)=>`<span style="top:${j*HH+6}px">${pad(lo+j)}:00</span>`).join("")}</div>`;
+ days.forEach(x=>{
+  const ev=x.ev.filter(e=>e.time).sort((a,b)=>a.s-b.s||b.e-a.e);let cl=[],ce=0,ends=[];
+  const flush=()=>{const m=Math.max(...cl.map(z=>z.l))+1;cl.forEach(z=>z.n=m);cl=[];ends=[]};
+  ev.forEach(e=>{if(cl.length&&e.s>=ce)flush();let l=ends.findIndex(t=>t<=e.s);if(l<0){l=ends.length;ends.push(0)}ends[l]=e.e;e.l=l;cl.push(e);ce=Math.max(ce,e.e)});
+  if(cl.length)flush();
+  h+=`<div class="col" style="height:${H}px;background-image:repeating-linear-gradient(to bottom,transparent 0,transparent ${HH-1}px,var(--bd) ${HH-1}px,var(--bd) ${HH}px)">`+
+  ev.map(e=>`<div class="ev ${e.done?"done":""}" style="--c:${CATS[e.cat][2]};top:${(e.s/60-lo)*HH}px;height:${Math.max(20,(e.e-e.s)/60*HH-2)}px;left:calc(${e.l/e.n*100}% + 1px);width:calc(${100/e.n}% - 3px)" onclick="openDlg('${e.id}')"><b>${rng(e)}</b>${e.rec?"🔁 ":""}${esc(e.title)}${e.notes?" · "+esc(e.notes):""}</div>`).join("")+
+  (x.k===today?(()=>{const m=new Date().getHours()*60+new Date().getMinutes();return m/60>=lo&&m/60<=hi?`<div class="now" style="top:${(m/60-lo)*HH}px"></div>`:""})():"")+"</div>";
+ });
+ return h+"</div>";
+}
+function render(){
+ renderNav();const v=$("#view"),today=iso(new Date());
+ if(tab==="schedule"){
+  $("#title").textContent="Schedule";
+  const dates=view==="week"?Array.from({length:7},(_,n)=>{const d=mon(anchor);d.setDate(d.getDate()+n);return d}):[anchor];
+  const lbl=view==="week"?dates[0].toLocaleDateString(undefined,{month:"short",day:"numeric"})+" – "+dates[6].toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"}):anchor.toLocaleDateString(undefined,{weekday:"long",month:"long",day:"numeric"});
+  v.innerHTML=`<div class="card"><h3>Today's activities</h3>${list(occ(today),false,"Nothing planned for today 🎈")}</div>
+  <div class="top"><h3 style="margin:0;flex:1">${lbl}</h3>
+  <button class="btn ${view==="day"?"on":""}" onclick="setView('day')">Day</button><button class="btn ${view==="week"?"on":""}" onclick="setView('week')">Week</button>
+  <button class="btn" onclick="nav(-1)">‹</button><button class="btn" onclick="nav(0)">Today</button><button class="btn" onclick="nav(1)">›</button></div>
+  <div class="tlw">${timeline(dates)}</div>`;
+ }else{
+  $("#title").textContent=CATS[tab][1]+" "+CATS[tab][0];
+  const all=items.filter(i=>i.cat===tab),rs=recs.filter(r=>r.cat===tab);
+  const up=all.filter(i=>!i.done&&i.date>=today).sort(sortf),over=all.filter(i=>!i.done&&i.date<today&&["deadline","homework","reminder"].includes(tab)).sort(sortf),dn=all.filter(i=>i.done).sort(sortf);
+  const past=!["deadline","homework","reminder"].includes(tab);
+  v.innerHTML=(rs.length?`<div class="card"><h3>🔁 Repeating weekly</h3>${rs.map(r=>`<div class="item" style="--c:${CATS[r.cat][2]}"><div class="t">${esc(r.title)}<small>${r.days.map(d=>DN[d]).join(", ")} · ${rng(r)}${r.until?" · until "+r.until:""}</small></div><button class="ic" onclick="openDlg('${r.id}')">✏️</button><button class="ic" onclick="del('${r.id}')">🗑️</button></div>`).join("")}</div>`:"")+
+  (over.length?`<div class="card"><h3>⚠️ Overdue</h3>${list(over,true,"")}</div>`:"")+
+  `<div class="card"><h3>Upcoming${up.length>60?" (next 60)":""}</h3>${list(up.slice(0,60),true,"Nothing here yet. Click + Add"+(tab==="class"?" or Import splan.":"."))}</div>`+
+  (dn.length?`<div class="card"><h3>Done</h3>${list(dn,true,"")}</div>`:"");
+ }
+}
+window.setView=x=>{view=x;render()};
+window.nav=n=>{if(!n){anchor=new Date();anchor.setHours(0,0,0,0)}else anchor=new Date(anchor.getTime()+n*(view==="week"?7:1)*864e5);render()};
+window.tog=id=>{const i=items.find(x=>x.id===id);i.done=!i.done;save();render()};
+window.del=id=>{if(confirm("Delete this item?")){items=items.filter(x=>x.id!==id);recs=recs.filter(x=>x.id!==id);save();$("#dlg").open&&$("#dlg").close();render()}};
+
+window.openDlg=id=>{
+ const d=$("#dlg");
+ if(id){form(items.find(x=>x.id===id)||recs.find(x=>x.id===id))}
+ else{
+  $("#dbody").innerHTML=`<h3 style="margin:0">What kind of item is this?</h3><div class="cats">${Object.entries(CATS).map(([k,v])=>`<button class="btn" data-c="${k}">${v[1]}<br>${v[0]}</button>`).join("")}</div><div class="acts"><button class="btn" onclick="dlg.close()">Cancel</button></div>`;
+  $("#dbody").querySelectorAll("[data-c]").forEach(b=>b.onclick=()=>form({cat:b.dataset.c,date:iso(new Date()),time:"",title:"",notes:""}));
+ }
+ if(!d.open)d.showModal();
+};
+function form(i){
+ const rep=!!i.days,dt=i.date||i.from||iso(new Date()),days=i.days||[(new Date(dt+"T00:00").getDay()+6)%7];
+ $("#dbody").innerHTML=`<h3 style="margin:0">${i.id?"Edit":"New"} ${CATS[i.cat][1]} ${CATS[i.cat][0]}</h3>
+ <label>Title</label><input id="f_t" value="${esc(i.title)}">
+ <label>Category</label><select id="f_c">${Object.entries(CATS).map(([k,v])=>`<option value="${k}" ${k===i.cat?"selected":""}>${v[0]}</option>`).join("")}</select>
+ <label class="chk"><input type="checkbox" id="f_r" ${rep?"checked":""}> Repeat every week (e.g. every Thursday)</label>
+ <div class="chips" id="f_days" style="display:${rep?"flex":"none"}">${DN.map((n,k)=>`<label><input type="checkbox" value="${k}" ${days.includes(k)?"checked":""}>${n}</label>`).join("")}</div>
+ <div class="row"><div><label id="f_dl">${rep?"Starts on":"Date"}</label><input type="date" id="f_d" value="${dt}"></div><div><label>Start</label><input type="time" id="f_h" value="${i.time||""}"></div><div><label>End</label><input type="time" id="f_e" value="${i.end||""}"></div></div>
+ <div id="f_u" style="display:${rep?"block":"none"}"><label>Repeat until (optional)</label><input type="date" id="f_ud" value="${i.until||""}"></div>
+ <label>Notes / room (optional)</label><textarea id="f_n" rows="2">${esc(i.notes)}</textarea>
+ <div class="acts">${i.id?`<button class="btn" onclick="del('${i.id}')" style="margin-right:auto">Delete</button>`:""}<button class="btn" onclick="dlg.close()">Cancel</button><button class="btn p" id="f_s">Save</button></div>`;
+ $("#f_r").onchange=e=>{const r=e.target.checked;$("#f_days").style.display=r?"flex":"none";$("#f_u").style.display=r?"block":"none";$("#f_dl").textContent=r?"Starts on":"Date"};
+ $("#f_s").onclick=()=>{
+  const t=$("#f_t").value.trim(),d=$("#f_d").value,r=$("#f_r").checked;
+  if(!t||!d){alert("Title and date are required.");return}
+  const dys=[...document.querySelectorAll("#f_days input:checked")].map(x=>+x.value);
+  if(r&&!dys.length){alert("Pick at least one weekday.");return}
+  const o={title:t,cat:$("#f_c").value,time:$("#f_h").value,end:$("#f_e").value,notes:$("#f_n").value};
+  const id=i.id||nid();items=items.filter(x=>x.id!==id);recs=recs.filter(x=>x.id!==id);
+  Object.keys(notified).forEach(k=>{if(k.startsWith(id))delete notified[k]});
+  if(r)recs.push({id,...o,days:dys,from:d,until:$("#f_ud").value});else items.push({id,done:i.done||false,src:i.src,...o,date:d});
+  save();$("#dlg").close();render();check();
+ };
+}
+$("#add").onclick=()=>openDlg();
+
+// ---- splan .ics import with course-code filter ----
+const nrm=s=>String(s).toLowerCase().replace(/&amp;|&/g," and ").replace(/\s+/g," ");
+const unesc=s=>(s||"").replace(/\\n/gi," ").replace(/\\([,;\\])/g,"$1");
+function parseICS(t){
+ const L=t.replace(/\r/g,"").replace(/\n[ \t]/g,"").split("\n"),ev=[];let c=null;
+ for(const l of L){if(l==="BEGIN:VEVENT")c={};else if(l==="END:VEVENT"){if(c)ev.push(c);c=null}else if(c){const x=l.indexOf(":");if(x>0)c[l.slice(0,x).split(";")[0]]=l.slice(x+1)}}
+ return ev;
+}
+function icsDate(s){
+ const m=(s||"").match(/^(\d{4})(\d\d)(\d\d)(?:T(\d\d)(\d\d)(\d\d)?(Z)?)?$/);if(!m)return null;
+ if(!m[4])return{date:`${m[1]}-${m[2]}-${m[3]}`,time:""};
+ if(m[7]){const d=new Date(Date.UTC(+m[1],m[2]-1,+m[3],+m[4],+m[5]));return{date:iso(d),time:pad(d.getHours())+":"+pad(d.getMinutes())}}
+ return{date:`${m[1]}-${m[2]}-${m[3]}`,time:m[4]+":"+m[5]};
+}
+const split=s=>s.split(/[\n,;]+/).map(x=>x.trim()).filter(Boolean);
+const hash=s=>{let h=5381;for(const c of s)h=(h*33^c.charCodeAt(0))>>>0;return h.toString(36)};
+let parsed=[];
+function matches(e,codes,kws){const h=nrm([e.SUMMARY,e.DESCRIPTION,e.LOCATION,e.CATEGORIES].map(unesc).join(" "));return codes.some(c=>h.includes(c.toLowerCase()))||kws.some(k=>h.includes(nrm(k)))}
+window.openImport=()=>{
+ $("#dbody").innerHTML=`<h3 style="margin:0">📥 Import from splan</h3>
+ <p class="empty" style="margin:8px 0">Open your splan timetable, click the calendar / iCal icon to download the <b>.ics</b> file (choose the whole semester), then pick it here. Only courses matching the filters below are imported. Re-importing replaces earlier imported classes.</p>
+ <input type="file" id="i_f" accept=".ics,text/calendar">
+ <label>Course codes (comma or new line)</label><textarea id="i_c" rows="3">${filt.codes.join(", ")}</textarea>
+ <label>Course name keywords (one per line)</label><textarea id="i_k" rows="2">${filt.kws.join("\n")}</textarea>
+ <div id="i_p" class="empty" style="margin-top:8px">No file chosen yet.</div>
+ <div class="acts"><button class="btn" onclick="dlg.close()">Cancel</button><button class="btn p" id="i_go">Import matching</button></div>`;
+ const prev=()=>{
+  if(!parsed.length){$("#i_p").textContent="No file chosen yet.";return}
+  const m=parsed.filter(e=>matches(e,split($("#i_c").value),split($("#i_k").value)));
+  $("#i_p").innerHTML=`${parsed.length} events in file · <b>${m.length} match</b>`+(m.length?"":"<br>Sample titles in file: "+[...new Set(parsed.map(e=>unesc(e.SUMMARY)))].slice(0,6).map(esc).join(" | "));
+ };
+ $("#i_f").onchange=async e=>{const f=e.target.files[0];if(!f)return;parsed=parseICS(await f.text());prev()};
+ $("#i_c").oninput=prev;$("#i_k").oninput=prev;
+ $("#i_go").onclick=()=>{
+  filt={codes:split($("#i_c").value),kws:split($("#i_k").value)};
+  const out=[];
+  parsed.filter(e=>matches(e,filt.codes,filt.kws)).forEach(e=>{
+   const s=icsDate(e.DTSTART),en=icsDate(e.DTEND);if(!s)return;
+   out.push({id:"s"+hash((e.UID||e.SUMMARY)+e.DTSTART),src:"splan",cat:"class",done:false,title:unesc(e.SUMMARY),date:s.date,time:s.time,end:en&&en.date===s.date?en.time:"",notes:unesc(e.LOCATION)});
+  });
+  items=items.filter(x=>x.src!=="splan").concat(out);save();$("#dlg").close();tab="class";render();toast(`Imported ${out.length} classes`);
+ };
+ if(!$("#dlg").open)$("#dlg").showModal();
+};
+$("#impBtn").onclick=openImport;
+
+// ---- alerts: 2 hours before any timed item ----
+function toast(msg){const e=document.createElement("div");e.textContent=msg;e.onclick=()=>e.remove();$("#toast").appendChild(e);setTimeout(()=>e.remove(),15000)}
+function check(){
+ const now=Date.now();
+ [iso(new Date()),iso(new Date(now+864e5))].forEach(k=>occ(k).forEach(i=>{
+  if(i.done||!i.time)return;const key=i.id+k;if(notified[key])return;
+  const left=new Date(k+"T"+i.time).getTime()-now;
+  if(left<=72e5&&left>-36e5){
+   notified[key]=1;save();
+   const m=`${CATS[i.cat][1]} "${i.title}" at ${i.time}`+(left>0?` (in ${Math.max(1,Math.round(left/6e4))} min)`:"");
+   toast(m);try{if("Notification"in window&&Notification.permission==="granted")new Notification("Upcoming: "+i.title,{body:m})}catch(e){}
+  }}));
+}
+function notifState(){const b=$("#notifBtn");if(!("Notification"in window)){b.style.display="none";return}b.textContent=Notification.permission==="granted"?"🔔 Alerts on":"🔔 Enable alerts"}
+$("#notifBtn").onclick=async()=>{try{await Notification.requestPermission()}catch(e){}notifState();toast("Alerts fire 2 hours before, while this page is open.")};
+notifState();render();check();setInterval(check,30000);setInterval(()=>{if(tab==="schedule"&&!$("#dlg").open)render()},300000);
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)check()});
+</script></body></html>
